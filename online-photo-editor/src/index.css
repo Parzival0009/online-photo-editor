@@ -1,0 +1,12 @@
+.App {
+  text-align: center;
+  margin: 20px;
+  font-size: 16pt;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("./assets/fonts/Inter.ttf");
+}
+body {
+  font-family: Inter !important;
+}
