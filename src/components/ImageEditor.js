@@ -74,6 +74,7 @@ function ImageEditor() {
 
   function loadFile(e) {
     // Task 1 Code here
+    let reader = new FileReader();
   }
 
   function handleChange(file) {
