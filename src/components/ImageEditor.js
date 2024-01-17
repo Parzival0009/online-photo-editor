@@ -61,7 +61,6 @@ function ImageEditor() {
     display: "none",
   });
 
-
   const resultCanvas = useRef(null);
 
   function loadFabricCanvas(file) {
@@ -74,7 +73,18 @@ function ImageEditor() {
 
   function loadFile(e) {
     // Task 1 Code here
-    let reader = new FileReader();
+    let file = e.target.files[0]; //to select the first file from multiple (user)
+    let reader = new FileReader(); //creates a reader instance from fileReader object
+    reader.onloadend = function () {
+      // its an event handler , whenever the upload is complete , it executes the function
+      setImgFile(reader.result); //it set the result of reading the file as an image file
+      loadCanvas(reader.result); // function call with the result of the file
+    };
+    if (file) {
+      //checks the file exisistance
+      reader.readAsDataURL(file); //reads the content of file and generates data Url( allows data to be encoded into a string, and then embedded directly into HTML or CSS)
+    }
+    setIsImageUpload(true); //updating state (image uploaded)
   }
 
   function handleChange(file) {
@@ -82,7 +92,7 @@ function ImageEditor() {
   }
 
   function loadCanvas(file) {
-      // Task 3 Code here
+    // Task 3 Code here
   }
 
   function cropImg() {
@@ -100,7 +110,6 @@ function ImageEditor() {
   function drawImages(id) {
     // Task 7 Code here
   }
-
 
   function addText(text) {
     // Task 8 Code here
@@ -140,8 +149,7 @@ function ImageEditor() {
             <div className="d-flex justify-content-center heading pt-5 pb-2">
               Online Photo Editor
             </div>
-            <div className="d-flex justify-content-center">
-            </div>
+            <div className="d-flex justify-content-center"></div>
 
             <div className="d-flex justify-content-center align-items-center p-4">
               <FileUploader
@@ -281,7 +289,7 @@ function ImageEditor() {
           <div className="col-12 pe-5">
             <div className="d-flex justify-content-between pe-5">
               <div className="logoText">
-                  <a href="/"> Online Photo Editor </a>
+                <a href="/"> Online Photo Editor </a>
               </div>
               {isCropClicked ||
               isRotateClicked ||
