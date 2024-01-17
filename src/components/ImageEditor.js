@@ -103,6 +103,63 @@ function ImageEditor() {
 
   function loadCanvas(file) {
     // Task 3 Code here
+    if (!fabricCanvas) {
+      let fabriccanvas = new fabric.Canvas("canvas2", {
+        preserveObjectStacking: true,
+      });
+      setFabricCanvas(fabriccanvas);
+    }
+  
+    let canvas = resultCanvas.current;
+    const context = canvas.getContext("2d");
+    let image = new Image();
+    image.src = file;
+    image.onload = function () {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      let imgSize = {
+        width: image.width,
+        height: image.height,
+      };
+  
+      setSelection(imgSize);
+      context.save();
+  
+      let hRatio = canvas.width / image.width;
+      let vRatio = canvas.height / image.height;
+      let ratio = Math.min(hRatio, vRatio);
+  
+      let centerShift_x = (canvas.width - image.width * ratio) / 2;
+      let centerShift_y = (canvas.height - image.height * ratio) / 2;
+  
+      context.drawImage(
+        image,
+        0,
+        0,
+        image.width,
+        image.height,
+        centerShift_x,
+        centerShift_y,
+        image.width * ratio,
+        image.height * ratio
+      );
+      context.restore();
+      var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+      var data = imgData.data;
+      for (var i = 0; i < data.length; i += 4) {
+        if (data[i + 3] < 255) {
+          data[i] = 255;
+          data[i + 1] = 255;
+          data[i + 2] = 255;
+          data[i + 3] = 255;
+        }
+      }
+      context.putImageData(imgData, 0, 0);
+      setResizeHeight(canvas.height);
+      setResizeWidth(canvas.width);
+      setPreviousState(canvas.toDataURL("image/jpeg"));
+      setImgFile(canvas.toDataURL("image/jpeg"));
+    };
+    toggleSelector(false);
   }
 
   function cropImg() {
@@ -351,8 +408,8 @@ function ImageEditor() {
               <div style={fabricCanvasVisible}>
                 <canvas
                   className="canvas mb-3"
-                  width="800"
-                  height="800"
+                  width="1000"
+                  height="1000"
                   id="canvas2"
                 ></canvas>
               </div>
