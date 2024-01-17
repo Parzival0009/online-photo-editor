@@ -89,51 +89,56 @@ function ImageEditor() {
 
   function handleChange(file) {
     // Task 2 Code here
-    let newFile = file; //assigning the value of file to newFile variable 
-   let reader = new FileReader();
-   reader.onloadend = function () {
-    setImgFile(reader.result);
-    loadCanvas(reader.result);
-  };
-  if (newFile) {
-    reader.readAsDataURL(newFile);
-  }
-  setIsImageUpload(true);
+    let newFile = file; //assigning the value of file to newFile variable
+    let reader = new FileReader();
+    reader.onloadend = function () {
+      setImgFile(reader.result);
+      loadCanvas(reader.result);
+    };
+    if (newFile) {
+      reader.readAsDataURL(newFile);
+    }
+    setIsImageUpload(true);
   }
 
   function loadCanvas(file) {
     // Task 3 Code here
     if (!fabricCanvas) {
+      //checking and creating fabric canvas instance
       let fabriccanvas = new fabric.Canvas("canvas2", {
-        preserveObjectStacking: true,
+        preserveObjectStacking: true, //allow stacking of object i.e. it will preserve the order of stackin g of abjects
       });
-      setFabricCanvas(fabriccanvas);
+      setFabricCanvas(fabriccanvas); // used to update the state with new instance
     }
-  
-    let canvas = resultCanvas.current;
-    const context = canvas.getContext("2d");
-    let image = new Image();
-    image.src = file;
+
+    let canvas = resultCanvas.current; //using useRef hook to get the current value of resultCanvas
+    const context = canvas.getContext("2d"); //rendering the context in 2d form
+    let image = new Image(); // created an image obj which will help to load and handle image
+    image.src = file; // get source of image obj from the file data url that is passed
+
+    //event handler to excute the function when the image is loaded
     image.onload = function () {
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(0, 0, canvas.width, canvas.height); //clearing the canvas for new image
       let imgSize = {
+        //create obj using height and width of loaded img
         width: image.width,
         height: image.height,
       };
-  
-      setSelection(imgSize);
-      context.save();
-  
-      let hRatio = canvas.width / image.width;
-      let vRatio = canvas.height / image.height;
-      let ratio = Math.min(hRatio, vRatio);
-  
-      let centerShift_x = (canvas.width - image.width * ratio) / 2;
+
+      setSelection(imgSize); //updated the state
+      context.save(); //saving the state
+
+      let hRatio = canvas.width / image.width; //calculating horizontal ratio, to adjust according to canvas if 1 no scaling if any other then we have to scale horizontally by that value
+      let vRatio = canvas.height / image.height; //calculating vertical ratio, to adjust according to canvas if 1 no scaling if any other then we have to scale vertically by that value
+      let ratio = Math.min(hRatio, vRatio); // scale min from horizontal and vertical to get get uniform img
+
+      let centerShift_x = (canvas.width - image.width * ratio) / 2; //for centering the image
       let centerShift_y = (canvas.height - image.height * ratio) / 2;
-  
+
       context.drawImage(
+        //Take the original image starting from the top-left corner (0, 0) with a width and height
         image,
-        0,
+        0, //Draw this portion of the image onto the canvas, starting from the coordinates (centerShift_x, centerShift_y) with a scaled width and height of image.width * ratio and image.height * ratio.
         0,
         image.width,
         image.height,
@@ -142,7 +147,7 @@ function ImageEditor() {
         image.width * ratio,
         image.height * ratio
       );
-      context.restore();
+      context.restore(); //restore the state that is saved 
       var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
       var data = imgData.data;
       for (var i = 0; i < data.length; i += 4) {
@@ -164,6 +169,42 @@ function ImageEditor() {
 
   function cropImg() {
     // Task 4 Code here
+    const canvas = resultCanvas.current;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    let image = new Image();
+
+    image.onload = function () {
+      context.save();
+      context.drawImage(
+        image,
+        selection.x,
+        selection.y,
+        selection.width,
+        selection.height,
+        canvas.width / 2 - selection.width / 2,
+        canvas.height / 2 - selection.height / 2,
+        selection.width,
+        selection.height
+      );
+
+      context.restore();
+      var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+      var data = imgData.data;
+      for (var i = 0; i < data.length; i += 4) {
+        if (data[i + 3] < 255) {
+          data[i] = 255;
+          data[i + 1] = 255;
+          data[i + 2] = 255;
+          data[i + 3] = 255;
+        }
+      }
+      context.putImageData(imgData, 0, 0);
+      setPreviousState(canvas.toDataURL("image/jpeg"));
+      setImgFile(canvas.toDataURL("image/jpeg"));
+      toggleSelector(false);
+    };
+    image.src = imgFile;
   }
 
   function rotate(degrees) {
