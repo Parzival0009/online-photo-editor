@@ -74,7 +74,7 @@ function ImageEditor() {
   function loadFile(e) {
     // Task 1 Code here
     let file = e.target.files[0]; //to select the first file from multiple (user)
-    let reader = new FileReader(); //creates a reader instance from fileReader object
+    let reader = new FileReader(); //creates a reader instance from fileReader object(allows async reading)
     reader.onloadend = function () {
       // its an event handler , whenever the upload is complete , it executes the function
       setImgFile(reader.result); //it set the result of reading the file as an image file
@@ -89,6 +89,16 @@ function ImageEditor() {
 
   function handleChange(file) {
     // Task 2 Code here
+    let newFile = file; //assigning the value of file to newFile variable 
+   let reader = new FileReader();
+   reader.onloadend = function () {
+    setImgFile(reader.result);
+    loadCanvas(reader.result);
+  };
+  if (newFile) {
+    reader.readAsDataURL(newFile);
+  }
+  setIsImageUpload(true);
   }
 
   function loadCanvas(file) {
