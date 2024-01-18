@@ -291,10 +291,32 @@ function ImageEditor() {
 
   function drawImages(id) {
     // Task 7 Code here
+    let group = [];
+  fabric.loadSVGFromURL(
+    imgTypes[id - 1],
+    function (objects, options) {
+      let loadedObjects = new fabric.Group(group);
+      loadedObjects.set({
+        left: 100,
+        top: 100,
+        width: 175,
+        height: 175,
+      });
+      fabricCanvas.add(loadedObjects);
+      fabricCanvas.renderAll();
+      setFabricCanvas(fabricCanvas);
+    },
+    function (item, object) {
+      object.set("id", item.getAttribute("id"));
+      object.fill = color;
+      group.push(object);
+    }
+  );
   }
 
   function addText(text) {
     // Task 8 Code here
+    
   }
 
   function applyButton() {
