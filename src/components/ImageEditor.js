@@ -316,7 +316,13 @@ function ImageEditor() {
 
   function addText(text) {
     // Task 8 Code here
-    
+     var normalText = new fabric.Text(text, {
+    fontWeight: "normal",
+    fill: color,
+  });
+  fabricCanvas.add(normalText);
+  fabricCanvas.renderAll();
+  setFabricCanvas(fabricCanvas);
   }
 
   function applyButton() {
