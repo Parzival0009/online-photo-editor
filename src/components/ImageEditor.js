@@ -148,21 +148,21 @@ function ImageEditor() {
         image.height * ratio
       );
       context.restore(); //restore the state that is saved 
-      var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-      var data = imgData.data;
-      for (var i = 0; i < data.length; i += 4) {
-        if (data[i + 3] < 255) {
+      var imgData = context.getImageData(0, 0, canvas.width, canvas.height); //retrives the image data 
+      var data = imgData.data; //storing pixel data
+      for (var i = 0; i < data.length; i += 4) { //set alpha channel 255 
+        if (data[i + 3] < 255) {     //used to removed transparency makes fully opaque
           data[i] = 255;
           data[i + 1] = 255;
           data[i + 2] = 255;
           data[i + 3] = 255;
         }
       }
-      context.putImageData(imgData, 0, 0);
+      context.putImageData(imgData, 0, 0); //puts the modified image back on canvas at co-ordinates
       setResizeHeight(canvas.height);
       setResizeWidth(canvas.width);
-      setPreviousState(canvas.toDataURL("image/jpeg"));
-      setImgFile(canvas.toDataURL("image/jpeg"));
+      setPreviousState(canvas.toDataURL("image/jpeg")); //setting state or saving the state for undo or comparing changes
+      setImgFile(canvas.toDataURL("image/jpeg")); //set state for storage 
     };
     toggleSelector(false);
   }
@@ -209,6 +209,51 @@ function ImageEditor() {
 
   function rotate(degrees) {
     // Task 5 Code here
+    let value = rotateDeg + degrees;
+    setRotateDeg(value);
+    if (value % 360 === 0) {  //if more than 360 then sets to 0
+      setRotateDeg(0);
+      value = 0;
+    }
+    const canvas = resultCanvas.current;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    let image = new Image();
+    image.src = imgFile;
+    image.onload = function () {
+      context.save(); 
+      context.translate(canvas.width / 2, canvas.height / 2);  //reposition the origin of image 
+      context.rotate((value * Math.PI) / 180); //applies rotation
+  
+      let wrh = image.width / image.height; //calculating aspect ratio 
+      let newWidth = canvas.width; //setting width
+      let newHeight = newWidth / wrh; //calculating new height 
+      
+      if (newHeight > canvas.height) {
+        newHeight = canvas.height;
+        newWidth = newHeight * wrh;
+      }
+      context.drawImage(
+        image,
+        -canvas.width / 2,
+        -canvas.height / 2,
+        newWidth,
+        newHeight
+      );
+      context.restore();
+      var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+      var data = imgData.data;
+      for (var i = 0; i < data.length; i += 4) {
+        if (data[i + 3] < 255) {
+          data[i] = 255;
+          data[i + 1] = 255;
+          data[i + 2] = 255;
+          data[i + 3] = 255;
+        }
+      }
+      context.putImageData(imgData, 0, 0);
+      toggleSelector(false);
+    };
   }
 
   function resize(width, height) {
