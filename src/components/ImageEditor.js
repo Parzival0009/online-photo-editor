@@ -327,6 +327,35 @@ function ImageEditor() {
 
   function applyButton() {
     // Task 9 Code here
+    const canvas = resultCanvas.current;
+  if (id === 1) {
+    cropImg();
+    toggleSelector(false);
+    setIsCropClicked(false);
+  } else if (id === 2) {
+    setPreviousState(canvas.toDataURL("image/jpeg"));
+    setImgFile(canvas.toDataURL("image/jpeg"));
+    setRotateDeg(0);
+    setIsRotateClicked(false);
+  } else if (id === 3) {
+    setPreviousState(canvas.toDataURL("image/jpeg"));
+    setImgFile(canvas.toDataURL("image/jpeg"));
+    setIsResizeClicked(false);
+  } else if (id === 4) {
+    setIsShapesClicked(false);
+    setImgFile(fabricCanvas.toDataURL());
+    setCanvasVisisble({ display: "inline-block" });
+    setFabricCanvasVisisble({ display: "none" });
+    loadCanvas(fabricCanvas.toDataURL());
+    setFabricCanvas(fabricCanvas.clear());
+  } else if (id === 5) {
+    setIsTextClicked(false);
+    setImgFile(fabricCanvas.toDataURL());
+    setCanvasVisisble({ display: "inline-block" });
+    setFabricCanvasVisisble({ display: "none" });
+    loadCanvas(fabricCanvas.toDataURL());
+    setFabricCanvas(fabricCanvas.clear());
+  }
   }
 
   function cancelButton() {
