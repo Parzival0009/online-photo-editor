@@ -377,6 +377,12 @@ function ImageEditor() {
 
   function downloadImg() {
     // Task 11 Code here
+    const link = document.createElement("a");
+  link.href = imgFile;
+  link.download = "image.png";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
   }
 
   function makeSelection(pixels) {
